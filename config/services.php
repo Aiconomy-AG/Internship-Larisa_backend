@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'rapidapi' => [
+        'key' => env('RAPIDAPI_KEY'),
+        'host' => env('RAPIDAPI_HOST', 'travel-advisor.p.rapidapi.com'),
+    ],
+
 ];
