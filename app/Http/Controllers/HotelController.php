@@ -28,6 +28,7 @@ class HotelController
         }
 
         $hotels = collect($response->json('data', []))
+            ->filter(fn ($item) => ($item['result_type'] ?? null) === 'lodging')
             ->map(function ($item) {
                 $result = $item['result_object'] ?? [];
 
