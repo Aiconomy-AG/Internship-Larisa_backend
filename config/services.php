@@ -38,6 +38,7 @@ return [
     'rapidapi' => [
         'key' => env('RAPIDAPI_KEY'),
         'host' => env('RAPIDAPI_HOST', 'travel-advisor.p.rapidapi.com'),
+        'host_booking' => env('RAPIDAPI_HOST_BOOKING', 'booking-com15.p.rapidapi.com'),
     ],
 
 ];
