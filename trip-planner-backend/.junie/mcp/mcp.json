@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "/Users/dragealarisa/.config/herd-lite/bin/php",
+            "args": [
+                "/Users/dragealarisa/Desktop/trip-planner-backend/artisan",
+                "boost:mcp"
+            ]
+        }
+    }
+}
