@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Trip;
+use App\Models\Activity;
 use Illuminate\Http\Request;
 
 class TripController
 {
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Trip::with('activities')->get());
+        return response()->json($request->user()->trips()->with('activities')->get());
     }
 
     public function store(Request $request)
@@ -20,15 +20,14 @@ class TripController
             'data_sfarsit' => 'nullable|date',
         ]);
 
-        $trip = Trip::create($validated);
+        $trip = $request->user()->trips()->create($validated);
 
         return response()->json($trip, 201);
     }
 
-
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        $trip = Trip::findOrFail($id);
+        $trip = $request->user()->trips()->findOrFail($id);
         $trip->delete();
 
         return response()->json(['message' => 'Calatorie stearsa cu succes!']);
@@ -36,7 +35,7 @@ class TripController
 
     public function update(Request $request, $id)
     {
-        $trip = Trip::findOrFail($id);
+        $trip = $request->user()->trips()->findOrFail($id);
 
         $validated = $request->validate([
             'numit_destinatie' => 'required|string|max:255',
@@ -49,9 +48,10 @@ class TripController
         return response()->json($trip);
     }
 
-
     public function addActivity(Request $request, $tripId)
     {
+        $trip = $request->user()->trips()->findOrFail($tripId);
+
         $validated = $request->validate([
             'titlu_activitate' => 'required|string|max:255',
             'tip' => 'nullable|string|in:obiectiv,gastronomie,altele',
@@ -59,14 +59,12 @@ class TripController
             'ora' => 'nullable',
         ]);
 
-        // Cream activitatea legata direct de tripId
-        $activity = \App\Models\Activity::create([
-            'trip_id' => $tripId,
+        $activity = $trip->activities()->create([
             'titlu_activitate' => $validated['titlu_activitate'],
             'tip' => $validated['tip'] ?? 'altele',
             'descriere' => $validated['descriere'] ?? null,
             'ora' => $validated['ora'] ?? null,
-            'bifat' => false
+            'bifat' => false,
         ]);
 
         return response()->json($activity, 201);
@@ -74,7 +72,8 @@ class TripController
 
     public function updateActivity(Request $request, $activityId)
     {
-        $activity = \App\Models\Activity::findOrFail($activityId);
+        $activity = Activity::whereHas('trip', fn ($query) => $query->where('user_id', $request->user()->id))
+            ->findOrFail($activityId);
 
         $validated = $request->validate([
             'titlu_activitate' => 'sometimes|required|string|max:255',
@@ -89,9 +88,10 @@ class TripController
         return response()->json($activity);
     }
 
-    public function deleteActivity($activityId)
+    public function deleteActivity(Request $request, $activityId)
     {
-        $activity = \App\Models\Activity::findOrFail($activityId);
+        $activity = Activity::whereHas('trip', fn ($query) => $query->where('user_id', $request->user()->id))
+            ->findOrFail($activityId);
         $activity->delete();
 
         return response()->json(['message' => 'Activitate stearsa cu succes!']);

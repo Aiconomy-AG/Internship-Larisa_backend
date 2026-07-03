@@ -1,15 +1,25 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HotelController;
+use App\Http\Controllers\TripController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/trips', [\App\Http\Controllers\TripController::class, 'index']);
-Route::post('/trips', [\App\Http\Controllers\TripController::class, 'store']);
-Route::put('/trips/{id}', [\App\Http\Controllers\TripController::class, 'update']);
-Route::delete('/trips/{id}', [\App\Http\Controllers\TripController::class, 'destroy']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 
-Route::get('/hotels/search', [\App\Http\Controllers\HotelController::class, 'search']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'me']);
 
-Route::post('/trips/{tripId}/activities', [\App\Http\Controllers\TripController::class, 'addActivity']);
-Route::put('/activities/{activityId}', [\App\Http\Controllers\TripController::class, 'updateActivity']);
-Route::delete('/activities/{activityId}', [\App\Http\Controllers\TripController::class, 'deleteActivity']);
+    Route::get('/trips', [TripController::class, 'index']);
+    Route::post('/trips', [TripController::class, 'store']);
+    Route::put('/trips/{id}', [TripController::class, 'update']);
+    Route::delete('/trips/{id}', [TripController::class, 'destroy']);
+
+    Route::get('/hotels/search', [HotelController::class, 'search']);
+
+    Route::post('/trips/{tripId}/activities', [TripController::class, 'addActivity']);
+    Route::put('/activities/{activityId}', [TripController::class, 'updateActivity']);
+    Route::delete('/activities/{activityId}', [TripController::class, 'deleteActivity']);
+});
